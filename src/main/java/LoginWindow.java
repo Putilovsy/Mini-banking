@@ -10,13 +10,11 @@ public class LoginWindow extends JFrame {
     private JButton loginButton;
 
     public LoginWindow() {
-        // Базовые настройки окна
         setTitle("Мини-Банк: Авторизация");
         setSize(350, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Создание панели для группировки элементов
         JPanel panel = new JPanel();
 
         panel.setLayout(new GridLayout(3, 2, 10, 10));
@@ -36,7 +34,6 @@ public class LoginWindow extends JFrame {
         loginButton = new JButton("Войти");
         panel.add(loginButton);
 
-        // Добавляем готовую панель в окно
         add(panel);
 
         // Обработка нажатия на кнопку
@@ -46,8 +43,26 @@ public class LoginWindow extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                // временно
-                System.out.println("Попытка входа пользователя: " + username);
+                String role = DatabaseRequest.authenticateUser(username, password);
+
+                if (role != null) {
+                    if (role.equals("CLIENT")) {
+                        dispose();
+
+                        ClientWindow clientWindow = new ClientWindow(username);
+                        clientWindow.setVisible(true);
+
+                    } else if (role.equals("ADMIN")) {
+                        // later...
+                        JOptionPane.showMessageDialog(LoginWindow.this,
+                                "Панель администратора пока в разработке!",
+                                "Инфо", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(LoginWindow.this,
+                            "Неверный логин или пароль!",
+                            "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }

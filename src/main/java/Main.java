@@ -1,13 +1,19 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.swing.SwingUtilities;
 
 public class Main {
 
-    private static final String DB_URL = "jdbc:sqlite:D:/Practice/DB/mini-banking.db";
+    private static final String DB_URL = "jdbc:sqlite:D:/Practice/DB/mini-banking";
 
     public static void main(String[] args) {
         testConnection();
+
+        SwingUtilities.invokeLater(() -> {
+            LoginWindow window = new LoginWindow();
+            window.setVisible(true);
+        });
     }
 
     public static void testConnection() {
