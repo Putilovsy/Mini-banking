@@ -36,7 +36,6 @@ public class LoginWindow extends JFrame {
 
         add(panel);
 
-        // Обработка нажатия на кнопку
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,11 +52,11 @@ public class LoginWindow extends JFrame {
                         clientWindow.setVisible(true);
 
                     } else if (role.equals("ADMIN")) {
-                        // later...
-                        JOptionPane.showMessageDialog(LoginWindow.this,
-                                "Панель администратора пока в разработке!",
-                                "Инфо", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                        dispose();
+
+                        AdminWindow adminWindow = new AdminWindow();
+                        adminWindow.setVisible(true);
+                }
                 } else {
                     JOptionPane.showMessageDialog(LoginWindow.this,
                             "Неверный логин или пароль!",

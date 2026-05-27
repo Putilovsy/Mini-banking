@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class ClientWindow extends JFrame {
 
+    // Конструктор главного окна клиента
     public ClientWindow(String username) {
-        // Базовые настройки окна
         setTitle("Мини-Банк: Личный кабинет [" + username + "]");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -18,9 +18,7 @@ public class ClientWindow extends JFrame {
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         panel.add(welcomeLabel, BorderLayout.NORTH);
 
-        // Обращаемся к БД за балансом
         Double balance = DatabaseRequest.getClientBalance(username);
-
         String balanceText;
         if (balance != null) {
             balanceText = "Ваш баланс: " + balance + " руб.";
@@ -32,7 +30,37 @@ public class ClientWindow extends JFrame {
         balanceLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         panel.add(balanceLabel, BorderLayout.CENTER);
 
-        // Добавляем панель в окно
+        JButton transferButton = new JButton("Перевести деньги");
+        panel.add(transferButton, BorderLayout.SOUTH);
+
+        transferButton.addActionListener(e -> {
+            String targetAccount = JOptionPane.showInputDialog(this, "Введите номер счета получателя:");
+            if (targetAccount == null || targetAccount.trim().isEmpty()) return;
+
+            String amountStr = JOptionPane.showInputDialog(this, "Введите сумму перевода:");
+            if (amountStr == null || amountStr.trim().isEmpty()) return;
+
+            try {
+                double amount = Double.parseDouble(amountStr);
+                if (amount <= 0) {
+                    JOptionPane.showMessageDialog(this, "Сумма должна быть больше нуля!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                boolean success = DatabaseRequest.transferMoney(username, targetAccount, amount);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Перевод успешно выполнен!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                    new ClientWindow(username).setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Ошибка перевода. Проверьте баланс и номер счета.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Неверный формат суммы!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         add(panel);
     }
 }
